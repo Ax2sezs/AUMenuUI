@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+  window.addEventListener("error", function () {
+    if (!sessionStorage.getItem("__reloaded_once")) {
+      sessionStorage.setItem("__reloaded_once", "1");
+      location.reload();
+    }
+  });
+</script>
+
+    <title>AfterYou</title>
+  </head>
+  <body class="bg-bg">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

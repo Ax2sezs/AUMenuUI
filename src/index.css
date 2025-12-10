@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Pangolin&family=Yomogi&display=swap');
+
+@import "tailwindcss";
+@plugin "daisyui";
+
+
+body {
+  font-family: "Yomogi", cursive;
+  font-weight: 1000;
+  font-style: normal;
+}
+
+
+:root {
+  --vh: 100%;
+}
+
+@media (max-width: 768px) {
+  .min-h-screen {
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+}
+
+@theme{
+    
+    /* --color-main:#AD8B73;
+    --color-light:#CEAB93;
+    --color-light-soft:#FFFBE9;
+    --color-heavy:#E3CAA5;
+    --color-dark-text:#1C1C1C;
+    --color-light-text:#FAFAFA;
+    --color-bg-hover:#917560;
+    --color-text-heavy:#6D4C41;
+    --font-itim:"Itim",curvive,sans-serif; */
+
+     /* --color-main:#FFC170;
+    --color-light:#FFC170;
+    --color-light-soft:#FFC170;
+    --color-heavy:#FF8F2E;
+    --color-dark-text:#1C1C1C;
+    --color-light-text:#FAFAFA;
+    --color-bg-hover:#917560;
+    --color-text-heavy:#6D4C41;
+    --font-itim:"Itim",curvive,sans-serif; */
+
+   
+    
+
+    /* APP */
+     /* --color-bg:#fefcfd;
+     --color-main:#9ad6dd;
+    --color-light:#79ACB3;
+    --color-light-soft:#FFFBE9;
+    --color-heavy:#9ad6dd;
+    --color-dark-text:#1C1C1C;
+    --color-light-text:#FAFAFA;
+    --color-bg-hover:#917560;
+    --color-text-heavy:#79ACB3;
+    --font-itim:"Itim",curvive,sans-serif; */
+
+
+     /* --color-bg:#F8F4E1;
+     --color-main:#AF8F6F;
+    --color-light:#79ACB3;
+    --color-light-soft:#F8F4E1;
+    --color-heavy:#AF8F6F;
+    --color-dark-text:#543310;
+    --color-light-text:#F8F4E1;
+    --color-bg-hover:#AF8F6F;
+    --color-text-heavy:#543310;
+    --font-itim:"Itim",curvive,sans-serif; */
+
+     --color-bg:#F8F4E1;
+     --color-main:#AF8F6F;
+    --color-light:#79ACB3;
+    --color-light-soft:#F8F4E1;
+    --color-heavy:#AF8F6F;
+    --color-dark-text:#543310;
+    --color-light-text:#F8F4E1;
+    --color-bg-hover:#AF8F6F;
+    --color-text-heavy:#543310;
+    --font-itim:"Itim",curvive,sans-serif;
+
+}
+
+@layer utilities {
+.bg-pattern {
+  background-color: #c58b55; /* สีพื้นไม้โทนน้ำตาลแดงกลาง */
+  background-image:
+    /* ลายไม้เบา ๆ แนวเฉียง */
+    repeating-linear-gradient(
+      7deg,
+      rgba(90, 45, 20, 0.08) 0px,
+      rgba(90, 45, 20, 0.08) 2px,
+      rgba(255, 230, 200, 0.04) 2px,
+      rgba(255, 230, 200, 0.04) 6px
+    ),
+    /* เฉดสีอุ่นไล่โทนแนวตั้ง */
+    linear-gradient(
+      to bottom,
+      rgba(255, 240, 220, 0.2) 0%,
+      rgba(180, 100, 50, 0.15) 100%
+    ),
+    /* เส้นบาง ๆ แนวตั้งแบบสุ่ม */
+    repeating-linear-gradient(
+      3deg,
+      rgba(0, 0, 0, 0.05) 0,
+      rgba(0, 0, 0, 0.05) 1px,
+      transparent 1px,
+      transparent 20px
+    ),
+    /* เงาไม้แนวนอนอ่อน */
+    repeating-linear-gradient(
+      to bottom,
+      rgba(100, 60, 20, 0.02) 0,
+      rgba(100, 60, 20, 0.02) 2px,
+      transparent 2px,
+      transparent 40px
+    );
+  background-blend-mode: multiply;
+  background-size: 150px 150px;
+}
+.bg-grid-pattern {
+    background-image:
+      linear-gradient(to right, rgba(140, 98, 58, 0.05) 2px, transparent 2px),
+      linear-gradient(to bottom, rgba(140, 98, 58, 0.05) 2px, transparent 2px);
+    background-size: 50px 50px;
+  }
+
+}
+
+
+@layer utilities {
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(to right, rgba(140, 98, 58, 0.05) 2px, transparent 2px),
+      linear-gradient(to bottom, rgba(140, 98, 58, 0.05) 2px, transparent 2px);
+    background-size: 50px 50px;
+  }
+}
+/* ปรับสีจุด pagination ของ Swiper */
+/* สีของจุดทั้งหมด */
+.swiper-pagination-bullet {
+  background-color: white !important;
+  opacity: 0.5;
+}
+
+/* สีของจุด active */
+.swiper-pagination-bullet-active {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+
+
+
+
+
