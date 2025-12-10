@@ -1,123 +1,112 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShoppingBag, UtensilsCrossed, Users, Plus, Minus } from "lucide-react"; // เพิ่ม Users icon
-import clsx from "clsx";
+import { Plus, Minus, ChevronRight } from "lucide-react"; // ใช้ Icon ที่เส้นบางลง
 import { useMenuData } from "../context/MenuDataContext";
-import { nav } from "framer-motion/client";
 
 export const WelcomeForm = ({ onOrderCreated }) => {
   const navigate = useNavigate();
-  // ⭐️ แก้ไข: customerHead เป็น number input (ใช้ค่าเริ่มต้นจาก localStorage หรือ 1)
+
+  // --- Logic เดิมทั้งหมด ---
   const paxFromStorage = localStorage.getItem("customerCount");
   const [customerHead, setCustomerHead] = useState(
     paxFromStorage ? Number(paxFromStorage) : 1
   );
-  const [behavior, setBehavior] = useState("1"); // 1 = Dine In, 2 = Takeaway
+  const [behavior] = useState("1");
   const { createOrder, orderLoading, error } = useMenuData();
-
-  const branchCode = localStorage.getItem("branchCode") || "null";
   const table = localStorage.getItem("tableNo") || "";
 
-  // ⭐️ Logic สำหรับการกำหนด cusType (ใช้ค่าคงที่แทน CusTypeMap)
   const getCustomerType = (headCount) => {
     if (headCount <= 1) return "Solo";
     if (headCount === 2) return "Duo";
     if (headCount >= 5) return "Family";
-    return "Friends"; // 3, 4
+    return "Friends";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const orderData = {
       userId: "00000000-0000-0000-0000-000000000000",
       behaviorCode: behavior,
       tableName: table || "",
-      // ⭐️ ใช้ customerHead ที่ผู้ใช้กรอก
       customerHead: customerHead,
-      // ⭐️ ใช้ logic ใหม่ในการกำหนด CusType
       cusType: getCustomerType(customerHead),
       sT_Nation_Id: "00000000-0000-0000-0000-000000000000",
       s_Branch_Id: "00000000-0000-0000-0000-000000000000",
       branch_Code: "ABH",
     };
-    console.log("Order Data:", orderData);
-    const order = await createOrder(orderData);
-    console.log("Order created:", order);
 
+    const order = await createOrder(orderData);
     if (order) {
-      // 1. เรียก action ของ parent (AppContent) เพื่อ set token/order
       onOrderCreated(order);
-      // 2. นำทางไปยังหน้า Menu ทันทีเมื่อ Order สร้างสำเร็จ
-      // navigate("/menu", { replace: true });
       window.location.href = "/menu";
       navigate("/menu", { replace: true });
     }
   };
 
-  const tabs = [
-    { id: "1", label: "ทานในร้าน", icon: <UtensilsCrossed size={20} /> },
-    // { id: "2", label: "สั่งกลับบ้าน", icon: <ShoppingBag size={20} /> },
-  ];
-
   return (
-    <div className="relative h-screen flex flex-col justify-center pb-40 bg-bg bg-grid-pattern">
-      {/* Logo */}
-      <div className="flex flex-col w-full justify-center items-center pt-10">
-        <img src="/logo.png" alt="Logo" className="w-full h-18 object-contain" />
-        <span className="text-sm font-bold text-text-heavy">アフターユー</span>
-      </div>
+    // Background: สีครีมโทนอุ่น (Warm Off-White) เหมือนกระดาษสา
+    <div className="relative h-screen flex flex-col items-center justify-center bg-bg bg-grid-pattern text-[#2C2C2C] px-6 overflow-hidden">
 
-      {/* MAIN FORM */}
+      {/* Background Decor: วงกลมสไตล์ Zen เรียบๆ */}
+      {/* <div className="absolute top-[-10%] right-[-20%] w-[50vh] h-[50vh] bg-main/30 rounded-full blur-3xl opacity-60 pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-20%] w-[60vh] h-[60vh] bg-[#F2F0EB] rounded-full blur-3xl opacity-60 pointer-events-none" /> */}
+
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="max-w-md p-4 md:p-8"
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} // Custom cubic-bezier for smooth feeling
+        className="w-full max-w-sm z-10 flex flex-col items-center"
       >
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6 bg-white p-6 rounded-2xl shadow-xl border border-stone-100"
-        >
 
-          {/* HEADER */}
-          <div className="flex items-center justify-between mb-3">
-            <label className="flex font-semibold text-lg text-gray-700 gap-3">
-              <UtensilsCrossed /> Dine In
-            </label>
-            <span className="text-main text-md bg-main/10 px-4 py-0.5 text-center rounded-3xl font-extrabold">
-              Table {table || "-"}
-            </span>
+        {/* 1. Brand Section */}
+        <div className="mb-12 text-center">
+          {/* Logo แบบ Minimal (ปรับ Opacity ให้ดูไม่ตะโกน) */}
+          <img src="/logo.png" alt="Logo" className="h-16 w-auto mx-auto mb-4 object-contain opacity-90 mix-blend-multiply" />
+          <h1 className="text-sm font-light tracking-wide text-[#2C2C2C] mb-2">
+            アフターユー
+          </h1>
+          <div className="w-12 h-0.5 bg-[#D4D4D4] mx-auto mb-4" />
+          <h1 className="text-3xl font-light tracking-wide text-[#2C2C2C]">
+            Welcome
+          </h1>
+          <p className="text-xs font-normal tracking-[0.2em] text-[#8C8C8C] mt-2 uppercase">
+            After You Dessert Cafe
+          </p>
+        </div>
+
+        {/* 2. Form Section */}
+        <form onSubmit={handleSubmit} className="w-full">
+
+          {/* Table Indicator (เส้นบางๆ สะอาดๆ) */}
+          <div className="flex flex-col items-center mb-10">
+            <span className="text-[10px] tracking-widest text-[#999] uppercase mb-1">Current Table</span>
+            <div className="text-xl font-medium border-b border-[#D4D4D4] px-4 pb-1 min-w-[60px] text-center">
+              {table || "-"}
+            </div>
           </div>
-          <div className="border border-stone-200 rounded-xl overflow-hidden" />
-          {/* จำนวนลูกค้า */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className=""
-          >
-            <label className="block font-semibold mb-3 text-gray-700 text-start">
-              Number of diners (persons)
+
+          {/* Customer Counter (หัวใจหลักของดีไซน์) */}
+          <div className="mb-2">
+            <label className="block text-center text-sm text-[#666] mb-6 font-medium">
+              How many guests?
             </label>
 
-            <div className="flex items-center gap-2 justify-between mx-2">
-              {/* ลด */}
-              <button
+            <div className="flex items-center justify-center gap-8">
+              {/* ปุ่มลบ: Minimal Circle */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 type="button"
                 onClick={() => setCustomerHead((prev) => Math.max(1, prev - 1))}
                 disabled={customerHead <= 1}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-200 text-2xl font-bold text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+                className="w-12 h-12 rounded-full border border-main flex items-center justify-center text-[#2C2C2C] hover:border-[#2C2C2C] hover:bg-white disabled:opacity-20 disabled:border-transparent transition-all duration-300"
               >
-                <Minus size={18} />
-              </button>
+                <Minus size={16} />
+              </motion.button>
 
-              <div className="relative w-40">
-                <Users
-                  size={20}
-                  className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
-                />
+              {/* ตัวเลข: ใหญ่ ชัด ไม่มีกรอบ */}
+              <div className="relative w-24 text-center">
                 <input
                   type="number"
                   min="1"
@@ -126,49 +115,59 @@ export const WelcomeForm = ({ onOrderCreated }) => {
                     const num = Number(e.target.value);
                     if (!isNaN(num) && num > 0) setCustomerHead(num);
                   }}
-                  required
-                  className="w-full py-2 pl-8 pr-2 text-center text-main rounded-3xl border-2 border-stone-200 focus:border-main outline-none text-xl font-semibold"
+                  className="w-full text-center text-4xl font-light bg-transparent outline-none text-main p-0 m-0 appearance-none font-serif" // ใช้ font-serif หรือ font ที่ดูหรูหราได้
                 />
               </div>
 
-              <button
+              {/* ปุ่มบวก: Minimal Circle */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 type="button"
                 onClick={() => setCustomerHead((prev) => prev + 1)}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-200 text-2xl font-bold text-gray-700 hover:bg-gray-300"
+                className="w-12 h-12 rounded-full border border-main flex items-center justify-center text-[#2C2C2C] hover:border-[#2C2C2C] hover:bg-white transition-all duration-300"
               >
-                <Plus size={18} />
-              </button>
+                <Plus size={16} />
+              </motion.button>
             </div>
-          </motion.div>
+          </div>
 
-          {/* ERROR */}
+          {/* Error Message */}
           {error && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-red-500 text-center text-sm font-medium"
+              className="text-red-400 text-xs text-center mb-6"
             >
-              {error.message || "เกิดข้อผิดพลาดในการสร้างออเดอร์"}
+              {error.message}
             </motion.p>
           )}
 
-          {/* SUBMIT */}
+          {/* Submit Button */}
           <motion.button
-            whileHover={{ scale: 1.01 }}
+            whileHover={{ scale: 1.02, backgroundColor: "#1a1a1a" }}
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={orderLoading}
-            className="mt-10 w-full h-14 rounded-xl bg-main font-bold text-xl text-white shadow-lg flex items-center justify-center"
+            className="w-full h-14 mt-8 bg-main text-[#F9F8F6] rounded-full text-sm font-medium tracking-widest uppercase shadow-xl shadow-stone-200/50 flex items-center justify-center gap-3 transition-colors duration-300"
           >
             {orderLoading ? (
-              <span className="loading loading-spinner loading-sm"></span>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              "Start Order"
+              <>
+                Start Order <ChevronRight size={16} />
+              </>
             )}
           </motion.button>
+
         </form>
       </motion.div>
 
-    </div >
+      {/* Footer Decoration */}
+      <div className="absolute bottom-6 text-[10px] text-[#C0C0C0] tracking-[0.3em] font-light">
+        After You  • Dessert Cafe
+      </div>
+
+    </div>
   );
 };

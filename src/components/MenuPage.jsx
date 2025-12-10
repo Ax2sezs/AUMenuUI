@@ -98,15 +98,12 @@ export const MenuPage = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-        className="h-screen p-4 bg-bg text-gray-800 relative flex flex-col items-center pt-20"
+        className="h-screen flex flex-col items-center justify-center bg-white bg-grid-pattern"
       >
-        <div className="absolute top-1/3 flex flex-col items-center">
-          <div className="bg-white p-4 rounded-full shadow-xl border border-stone-100 animate-bounce">
-            <Loader2 size={40} className="animate-spin text-main" />
-          </div>
-          <p className="mt-4 text-sm font-bold tracking-widest uppercase text-main">Loading Menu...</p>
-        </div>
+        <div className="w-12 h-12 border-[1px] border-t-[#2C2C2C] border-r-[#2C2C2C] border-b-transparent border-l-transparent rounded-full animate-spin mb-6" />
+        <p className="text-[10px] tracking-[0.3em] text-[#8C8C8C] uppercase animate-pulse">
+          Preparing Menu
+        </p>
       </motion.div>
     );
   }
@@ -116,7 +113,7 @@ export const MenuPage = ({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-grid-pattern px-4 w-screen text-stone-700 pb-24 bg-bg"
+      className="min-h-screen bg-grid-pattern px-4 w-screen text-stone-700 pb-24 bg-[#FAFAFA]"
     >
       {/* --- LOGO SECTION --- */}
       <div className="flex flex-col items-center justify-center pb-2 pt-2">
@@ -219,7 +216,7 @@ export const MenuPage = ({
 
                           {/* Add Button Mockup (Visual only) */}
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isAdded ? 'bg-stone-100 text-text-heavy' : 'bg-stone-50 text-stone-400 group-hover:bg-red-50 group-hover:text-red-600'}`}>
-                            <ShoppingCart size={14}/>
+                            <ShoppingCart size={14} />
                           </div>
                         </div>
                       </div>

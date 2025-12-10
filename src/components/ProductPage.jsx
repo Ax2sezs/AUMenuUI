@@ -182,8 +182,6 @@ export const ProductPage = ({ currentOrder, setCurrentOrder }) => {
         }
     };
 
-
-
     if (!product) {
         // ... (Loading state remains the same) ...
         return (
