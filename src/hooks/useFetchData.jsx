@@ -188,6 +188,7 @@ export const useFetchData = () => {
             console.log("createOrder received token:", token);
             // Set Token -> นี้จะ Trigger useEffect ด้านบนให้โหลดข้อมูล
             sessionStorage.setItem("token", token);
+            localStorage.setItem("token", token);
             setToken(token);
 
             return true;

@@ -1,17 +1,14 @@
 // src/components/Header.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { CircleAlert, ClipboardList, Receipt, Search, ShoppingCart, Utensils } from "lucide-react";
+import { CircleAlert, Search, ShoppingCart, Utensils, ClipboardList } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export const Header = ({
-    onLogoClick,
     cartCount,
-    historyCount,
     currentOrder,
     search,
     setSearch,
-    branchCode
 }) => {
     const navigate = useNavigate();
 
@@ -20,108 +17,114 @@ export const Header = ({
             toast.error("Cart is empty");
             return;
         }
-        navigate("/cart");
+        navigate("menu/cart");
     };
-
     const handleHistoryClick = () => {
-        navigate("/history");
-    };
-    console.log("History Count:", historyCount);
+        navigate("menu/history")
+    }
     return (
         <header
-            className="sticky top-0 z-40 w-full px-4 py-3 flex items-center justify-between shadow-sm transition-all duration-300"
-            style={{
-                backgroundColor: 'rgba(253, 251, 247, 0.9)', // #fdfbf7 with opacity
-                backdropFilter: 'blur(8px)',
-                borderBottom: '1px solid rgba(0,0,0,0.05)'
-            }}
+            className="w-full h-[56px] flex items-center justify-between"
+            // style={{
+            //     backgroundColor: "rgba(255,255,255,0.9)",
+            //     backdropFilter: "blur(8px)",
+            //     borderBottom: "1px solid rgba(0,0,0,0.06)",
+            // }}
         >
-            {/* Left: Table Info (Hanko Stamp Style) */}
-            <div className="flex items-center">
-                <div
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-main/50 shadow-sm bg-white"
-                >
-                    <Utensils size={14} className="text-main" />
-                    <span className="text-sm font-bold tracking-wide text-main">
-                        {localStorage.getItem("tableNo")}
-                    </span>
-                </div>
+            {/* Left: Table (Quiet Stamp) */}
+            <div className="flex items-center gap-1.5 text-stone-700">
+                <Utensils size={14} />
+                <span className="text-sm tracking-wide font-medium">
+                    {currentOrder.ord_CustTable}
+                </span>
             </div>
 
-            {/* Middle: Search Bar (Minimal Zen) */}
-            <div className="relative mx-3 flex-1 max-w-[200px]">
+            {/* Center: Search (Zen Input) */}
+            <div className="relative w-full max-w-[180px]">
                 <Search
-                    className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-main"
-                    size={16}
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
                 />
                 <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search..."
-                    className="w-full pl-9 pr-3 py-1.5 rounded-full text-sm bg-white border border-stone-200 focus:outline-none focus:border-main focus:ring-1 focus:ring-main transition-all placeholder-stone-400 text-stone-700 shadow-inner"
+                    placeholder="Search"
+                    className="
+                        w-full pl-8 pr-3 py-1.5 text-sm
+                        bg-transparent border border-stone-200
+                        rounded-full text-stone-700
+                        focus:outline-none focus:border-stone-400
+                        placeholder-stone-400
+                        transition-all
+                    "
                     onKeyDown={(e) => {
-                        if (e.key === "Enter") navigate(`/menu?search=${search}`);
+                        if (e.key === "Enter") {
+                            navigate(`/menu?search=${search}`);
+                        }
                     }}
                 />
-
             </div>
-
-            {/* Right: Cart Button */}
-            <div className="flex items-center">
+            {currentOrder?.payment_Method == 'cash' && (
                 <button
-                    className="relative p-2.5 rounded-full transition-transform hover:scale-105 active:scale-95 group"
+                    className="relative rounded-full transition-transform hover:scale-105 active:scale-95 group"
                     onClick={handleHistoryClick}
                 >
                     {/* Circle Background effect on hover */}
-                    <div className="absolute inset-0 bg-stone-100 rounded-full scale-0 group-hover:scale-100 transition-transform duration-200" />
-                    <span className="flex flex-col text-stone-600 justify-center items-center text-xs">
+                    <div className="absolute inset-0 bg-stone-900 rounded-full scale-0 group-hover:scale-100 transition-transform duration-200" />
+                    <span className="flex flex-col text-stone-600 justify-center items-center mr-2">
                         <ClipboardList
-                            size={22}
+                            size={18}
                             className="relative z-10 text-stone-600 group-hover:text-stone-800"
                         />
-                        Pay
                     </span>
-                    {(historyCount?.length ?? 0) > 0 && (
-                        <span
-                            className="absolute top-0 right-0 z-20 "
-                        >
-                            <CircleAlert size={18} className="text-main" />
-                        </span>
-                    )}
-                    {/* <h1 className="text-black text-xs bg-stone-400 rounded-full w-8 h-8 px-4 py-2">
+                </button>
+            )}
+
+            {/* {(historyCount?.length ?? 0) > 0 && (
+                    <span
+                        className="absolute top-0 right-0 z-20 "
+                    >
+                        <CircleAlert size={18} className="text-main" />
+                    </span>
+                )} */}
+            {/* <h1 className="text-black text-xs bg-stone-400 rounded-full w-8 h-8 px-4 py-2">
                         Bill
                     </h1> */}
-                    {/* {cartCount > 0 && (
+            {/* {cartCount > 0 && (
                         <span
                             className="absolute top-0 right-0 z-20 text-[10px] bg-main text-white rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center font-bold shadow-sm border border-white animate-bounce-short"                        >
                             {cartCount}
                         </span>
                     )} */}
-                </button>
-                <button
-                    className="relative p-2.5 rounded-full transition-transform hover:scale-105 active:scale-95 group"
-                    onClick={handleCartClick}
-                >
-                    {/* Circle Background effect on hover */}
-                    <div className="absolute inset-0 bg-stone-100 rounded-full scale-0 group-hover:scale-100 transition-transform duration-200" />
-                    <span className="flex flex-col text-stone-600 justify-center items-center text-xs">
+            {/* Right: Cart */}
+            <button
+                onClick={handleCartClick}
+                className="
+                    relative flex items-center gap-1
+                    pr-2
+                    text-stone-700 text-xs
+                    hover:text-stone-900
+                    transition-colors
+                "
+            >
+                <ShoppingCart size={18} />
+                {/* <span className="tracking-wide">Cart</span> */}
 
-                        <ShoppingCart
-                            size={22}
-                            className="relative z-10 text-stone-600 group-hover:text-stone-800"
-                        />
-                        Cart
+                {cartCount > 0 && (
+                    <span
+                        className="
+                            absolute -top-2 -right-0.5
+                            text-[10px] px-1.5 h-[16px]
+                            rounded-full bg-main text-white
+                            flex items-center justify-center
+                            font-medium
+                        "
+                    >
+                        {cartCount}
                     </span>
-                    {cartCount > 0 && (
-                        <span
-                            className="absolute top-0 right-0 z-20 bg-main text-[10px] text-white rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center font-bold shadow-sm border border-white animate-bounce-short"
-                        >
-                            {cartCount}
-                        </span>
-                    )}
-                </button>
-            </div>
-        </header>
+                )}
+            </button>
+        </header >
     );
 };

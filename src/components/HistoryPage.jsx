@@ -55,6 +55,16 @@ const SwipeButton = ({ onComplete, text = "สไลด์เพื่อชำ�
             setDragWidth(0); // ดีดกลับ
         }
     };
+    useEffect(() => {
+        // ล็อก scroll ของหน้าหลัก
+        const originalStyle = window.getComputedStyle(document.body).overflow;
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            // คืนค่าเดิมตอนปิด history
+            document.body.style.overflow = originalStyle;
+        };
+    }, []);
 
     // คำนวณความโปร่งใสของข้อความเมื่อลากบัง
     const textOpacity = Math.max(0, 1 - (dragWidth / (maxDragWidth * 0.8)));
@@ -181,24 +191,27 @@ export const HistoryPage = () => {
     }, 0);
 
     return (
-        <div className="flex flex-col bg-bg min-h-[calc(var(--vh)*100)] max-w-md mx-auto relative">
+
+        <div className="fixed inset-0 z-[100] flex flex-col bg-bg bg-grid-pattern min-h-[calc(var(--vh)*100)] max-w-md mx-auto">
             {/* Header */}
-            <div className="sticky top-0 z-30 bg-[#fdfbf7]/90 backdrop-blur-md border-b border-stone-200 p-4 flex items-center gap-4">
+            <div className="sticky top-0 z-30 bg-[#fdfbf7]/90 backdrop-blur-md border-b border-stone-200 p-3 flex items-center gap-4">
                 <button
-                    onClick={() => navigate("/menu")}
-                    className="w-10 h-10 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-600 shadow-sm hover:scale-105 transition active:bg-stone-50"
+                    onClick={() => navigate(-1)}
+                    className="w-8 h-8 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-600 shadow-sm hover:scale-105 transition active:bg-stone-50"
                 >
-                    <ChevronLeft size={22} />
+                    <ChevronLeft size={18} />
                 </button>
-                <h2 className="text-2xl font-bold tracking-wide text-main">
-                    สรุปรายการสั่ง
+                <h2 className="text-xl font-bold tracking-wide text-main">
+                    My Order
                 </h2>
             </div>
 
             {/* History Items List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-48 scrollbar-hide">
                 <div className="flex flex-col items-center rounded-2xl">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">สแกนเพื่อชำระเงินที่เคาน์เตอร์</h2>
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                        Scan at the counter to pay
+                    </h2>
                     <div className="bg-white p-4 rounded-xl border border-dashed border-stone-800">
                         <QRCode value={latestOrder?.s_Ord_H_Id || "Order ID Not Found"} size={150} />
                     </div>
@@ -230,9 +243,9 @@ export const HistoryPage = () => {
                                             <Handbag size={20} className="mr-1" /> Takeaway
                                         </div>
                                     )}
-                                    <div className="absolute top-0 right-0 py-2 px-3 bg-main text-white text-xs font-bold rounded-tr-2xl rounded-bl-xl shadow-md flex items-center gap-1">
+                                    {/* <div className="absolute top-0 right-0 py-2 px-3 bg-main text-white text-xs font-bold rounded-tr-2xl rounded-bl-xl shadow-md flex items-center gap-1">
                                         <Check size={16} />
-                                    </div>
+                                    </div> */}
 
                                     <div className="flex gap-4 items-start">
                                         <div className="relative shrink-0">
@@ -307,7 +320,7 @@ export const HistoryPage = () => {
             {/* ⭐️ Footer Summary & Slide to Pay */}
             <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-stone-100 p-5 rounded-t-3xl shadow-[0_-5px_25px_rgba(0,0,0,0.05)] z-40">
                 <div className="flex justify-between items-center px-1">
-                    <span className="text-gray-500 font-medium">ยอดรวมสุทธิ</span>
+                    <span className="text-gray-500 font-medium">Total </span>
                     <span className="text-3xl font-bold leading-none text-main">
                         {totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         <span className="text-lg ml-1 font-medium text-gray-400">฿</span>

@@ -27,9 +27,9 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // ล้าง token และ branchCode
-      sessionStorage.removeItem("token");
+      // sessionStorage.removeItem("token");
       // redirect ไป /home
-      window.location.href = "/";
+      // window.location.href = "/";
     }
     return Promise.reject(error);
   }

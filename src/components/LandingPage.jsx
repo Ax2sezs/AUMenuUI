@@ -10,43 +10,45 @@ export default function LandingPage() {
     const { setCurrentOrder, setToken } = useBranchAndOrder();
     const { checkTable, fetchCurrentOrder } = useMenuData();
 
-    useEffect(() => {
-        const init = async () => {
-            const tableNo = localStorage.getItem("tableNo");
-            if (!tableNo) {
-                navigate("/home", { replace: true });
-                return;
-            }
+    // useEffect(() => {
+    //     const init = async () => {
+    //         const tableNo = localStorage.getItem("tableNo");
+    //         const refid = localStorage.getItem("refid");
+    //         if (!tableNo || !refid) {
+    //             navigate("/home", { replace: true });
+    //             return;
+    //         }
 
-            try {
-                const result = await checkTable(tableNo);
-                if (result?.hasExistingOrder && result.token) {
-                    sessionStorage.setItem("token", result.token);
-                    setToken(result.token);
+    //         try {
+    //             const result = await checkTable(tableNo,refid);
+    //             console.log("LandingPage checkTable result:", result);
+    //             if (result?.hasExistingOrder && result.token) {
+    //                 sessionStorage.setItem("token", result.token);
+    //                 setToken(result.token);
 
-                    const orderData = await fetchCurrentOrder(result.token);
-                    if (orderData) {
-                        setCurrentOrder({
-                            ...orderData,
-                            orderDetails: [...(orderData.orderDetails || [])],
-                        });
-                    }
-                    navigate("/menu", { replace: true });
-                } else {
-                    sessionStorage.removeItem("token");
-                    navigate("/home", { replace: true });
-                }
-            } catch (err) {
-                console.error(err);
-                navigate("/home", { replace: true });
-            }
-        };
+    //                 const orderData = await fetchCurrentOrder(result.token);
+    //                 if (orderData) {
+    //                     setCurrentOrder({
+    //                         ...orderData,
+    //                         orderDetails: [...(orderData.orderDetails || [])],
+    //                     });
+    //                 }
+    //                 navigate("/menu", { replace: true });
+    //             } else {
+    //                 sessionStorage.removeItem("token");
+    //                 navigate("/home", { replace: true });
+    //             }
+    //         } catch (err) {
+    //             console.error(err);
+    //             navigate("/home", { replace: true });
+    //         }
+    //     };
 
-        init();
-    }, [checkTable, fetchCurrentOrder, navigate, setCurrentOrder, setToken]);
+    //     init();
+    // }, [checkTable, fetchCurrentOrder, navigate, setCurrentOrder, setToken]);
 
     return (
-        <div className="flex h-screen items-center justify-center bg-bg">
+        <div className="flex h-screen items-center justify-center bg-bg bg-grid-pattern">
             <motion.div
                 className="flex flex-col items-center justify-center"
                 initial={{ opacity: 0 }}

@@ -71,6 +71,7 @@ body {
     --font-itim:"Itim",curvive,sans-serif; */
 
      --color-bg:#F8F4E1;
+     --color-bg2:#FAFAFA;
      --color-main:#AF8F6F;
     --color-light:#79ACB3;
     --color-light-soft:#F8F4E1;
@@ -80,7 +81,6 @@ body {
     --color-bg-hover:#AF8F6F;
     --color-text-heavy:#543310;
     --font-itim:"Itim",curvive,sans-serif;
-
 }
 
 @layer utilities {
@@ -136,6 +136,15 @@ body {
       linear-gradient(to right, rgba(140, 98, 58, 0.05) 2px, transparent 2px),
       linear-gradient(to bottom, rgba(140, 98, 58, 0.05) 2px, transparent 2px);
     background-size: 50px 50px;
+  }
+  .writing-vertical-rl {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .writing-vertical-upright {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
   }
 }
 /* ปรับสีจุด pagination ของ Swiper */

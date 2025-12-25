@@ -62,7 +62,9 @@ export const Cart = ({
         const success = await checkoutOrder();
         if (success) {
             sessionStorage.setItem("finishedOrderId", currentOrder.s_Ord_H_Id);
-            navigate(`/qr/${currentOrder.s_Ord_H_Id}`);
+            navigate(`/qr/${currentOrder.s_Ord_H_Id}`, {
+                state: { background: location }
+            });
             onClearOrder();
             onClose();
         } else {

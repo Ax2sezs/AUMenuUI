@@ -44,8 +44,8 @@ export const KbankSuccess = ({ currentOrder, setCurrentOrder, setIsCartOpen }) =
       <div className="bg-white rounded-xl shadow-xl w-full max-w-sm flex flex-col overflow-hidden">
         {/* Success Header */}
         <div className="p-6 flex flex-col items-center bg-gray-50 border-b border-gray-200">
-          <CheckCircle className="text-green-500 w-16 h-16 mb-2" />
-          <h2 className="text-xl font-bold text-green-600 mb-2 text-center">
+          <CheckCircle className="text-main w-16 h-16 mb-2" />
+          <h2 className="text-xl font-bold text-main mb-2 text-center">
             Payment Successful!
           </h2>
           <p className="text-gray-600 text-center">
@@ -88,7 +88,7 @@ export const KbankSuccess = ({ currentOrder, setCurrentOrder, setIsCartOpen }) =
                     </span>
                   </div>
                 ))}
-                <div className="mt-2 text-right text-gray-800 font-semibold">
+                <div className="mt-2 text-right text-text-heavy font-semibold">
                   Total: {itemTotal} ฿
                 </div>
 

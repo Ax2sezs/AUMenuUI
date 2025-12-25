@@ -6,14 +6,14 @@ import SearchBar from "./SearchBar";
 export default function HeaderScrollWrapper({ cartCount, navigate, setIsCartOpen }) {
   const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 60); // scroll ลงเกิน 60px ให้หด
-    };
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setScrolled(window.scrollY > 60); // scroll ลงเกิน 60px ให้หด
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   return (
     <div className="sticky top-0 z-50 bg-bg">

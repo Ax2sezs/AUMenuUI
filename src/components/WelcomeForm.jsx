@@ -12,9 +12,11 @@ export const WelcomeForm = ({ onOrderCreated }) => {
   const [customerHead, setCustomerHead] = useState(
     paxFromStorage ? Number(paxFromStorage) : 1
   );
+  const [payment,setPayment] = useState("")
   const [behavior] = useState("1");
   const { createOrder, orderLoading, error } = useMenuData();
   const table = localStorage.getItem("tableNo") || "";
+  const branchCode = localStorage.getItem("branchCode")
 
   const getCustomerType = (headCount) => {
     if (headCount <= 1) return "Solo";
@@ -33,7 +35,8 @@ export const WelcomeForm = ({ onOrderCreated }) => {
       cusType: getCustomerType(customerHead),
       sT_Nation_Id: "00000000-0000-0000-0000-000000000000",
       s_Branch_Id: "00000000-0000-0000-0000-000000000000",
-      branch_Code: "ABH",
+      branch_Code: branchCode,
+      Payment_Method : payment
     };
 
     const order = await createOrder(orderData);
@@ -63,10 +66,10 @@ export const WelcomeForm = ({ onOrderCreated }) => {
         <div className="mb-12 text-center">
           {/* Logo แบบ Minimal (ปรับ Opacity ให้ดูไม่ตะโกน) */}
           <img src="/logo.png" alt="Logo" className="h-16 w-auto mx-auto mb-4 object-contain opacity-90 mix-blend-multiply" />
-          <h1 className="text-sm font-light tracking-wide text-[#2C2C2C] mb-2">
-            アフターユー
-          </h1>
-          <div className="w-12 h-0.5 bg-[#D4D4D4] mx-auto mb-4" />
+            <h1 className="text-sm font-light tracking-wide text-[#2C2C2C] mb-2">
+              アフターユー
+            </h1>
+          <div className="w-12 h-[1px] bg-[#D4D4D4] mx-auto mb-4" />
           <h1 className="text-3xl font-light tracking-wide text-[#2C2C2C]">
             Welcome
           </h1>
@@ -100,7 +103,7 @@ export const WelcomeForm = ({ onOrderCreated }) => {
                 type="button"
                 onClick={() => setCustomerHead((prev) => Math.max(1, prev - 1))}
                 disabled={customerHead <= 1}
-                className="w-12 h-12 rounded-full border border-main flex items-center justify-center text-[#2C2C2C] hover:border-[#2C2C2C] hover:bg-white disabled:opacity-20 disabled:border-transparent transition-all duration-300"
+                className="w-12 h-12 rounded-full border border-main flex items-center justify-center text-[#2C2C2C] hover:border-text-heavy transition-all duration-300 disabled:opacity-20 disabled:border-transparent"
               >
                 <Minus size={16} />
               </motion.button>
@@ -115,7 +118,7 @@ export const WelcomeForm = ({ onOrderCreated }) => {
                     const num = Number(e.target.value);
                     if (!isNaN(num) && num > 0) setCustomerHead(num);
                   }}
-                  className="w-full text-center text-4xl font-light bg-transparent outline-none text-main p-0 m-0 appearance-none font-serif" // ใช้ font-serif หรือ font ที่ดูหรูหราได้
+                  className="w-full text-center text-4xl font-light bg-transparent outline-none text-main p-0 m-0 appearance-none" // ใช้ font-serif หรือ font ที่ดูหรูหราได้
                 />
               </div>
 
@@ -125,7 +128,7 @@ export const WelcomeForm = ({ onOrderCreated }) => {
                 whileTap={{ scale: 0.9 }}
                 type="button"
                 onClick={() => setCustomerHead((prev) => prev + 1)}
-                className="w-12 h-12 rounded-full border border-main flex items-center justify-center text-[#2C2C2C] hover:border-[#2C2C2C] hover:bg-white transition-all duration-300"
+                className="w-12 h-12 rounded-full border border-main flex items-center justify-center text-[#2C2C2C] hover:border-text-heavy transition-all duration-300"
               >
                 <Plus size={16} />
               </motion.button>
@@ -145,11 +148,9 @@ export const WelcomeForm = ({ onOrderCreated }) => {
 
           {/* Submit Button */}
           <motion.button
-            whileHover={{ scale: 1.02, backgroundColor: "#1a1a1a" }}
-            whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={orderLoading}
-            className="w-full h-14 mt-8 bg-main text-[#F9F8F6] rounded-full text-sm font-medium tracking-widest uppercase shadow-xl shadow-stone-200/50 flex items-center justify-center gap-3 transition-colors duration-300"
+            className="w-full h-14 mt-8 bg-main text-white rounded-full text-sm font-medium tracking-widest uppercase flex items-center justify-center gap-3"
           >
             {orderLoading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -165,7 +166,7 @@ export const WelcomeForm = ({ onOrderCreated }) => {
 
       {/* Footer Decoration */}
       <div className="absolute bottom-6 text-[10px] text-[#C0C0C0] tracking-[0.3em] font-light">
-        After You  • Dessert Cafe
+        THERE'S ALWAYS ROOM FOR DESSERT
       </div>
 
     </div>

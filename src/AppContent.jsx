@@ -1,6 +1,6 @@
 // src/AppContent.jsx
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
 
@@ -21,6 +21,7 @@ import { HistoryPage } from "./components/HistoryPage";
 import LandingPage from "./components/LandingPage";
 import TableClosedPage from "./components/TableClosedPage";
 import MobileOnlyScreen from "./components/MobileOnlyScreen";
+import MenuLayout from "./MenuLayout";
 
 // =================== Route Guards ===================
 const RequireNotCheckedOut = ({ children }) => {
@@ -84,9 +85,10 @@ export default function AppContent() {
   const [deptCode, setDeptCode] = useState("All");
   const [search, setSearch] = useState("");
   const { fetchMenu, checkTable, fetchCurrentOrder: fetchCurrentOrderOriginal } = useMenuData();
-
+  const [cart, setCart] = useState([]);
   const [menu, setMenu] = useState([]);
   const [activeCategoryId, setActiveCategoryId] = useState(null);
+  const isProgrammaticScroll = useRef(false);
 
   // console.log("CURRENT ORDER : ", currentOrder);
 
@@ -95,6 +97,7 @@ export default function AppContent() {
 
     const init = async () => {
       const tableNo = localStorage.getItem("tableNo");
+      // const refId = localStorage.getItem("refId");
       if (!tableNo) {
         navigate("/home", { replace: true });
         return;
@@ -103,17 +106,18 @@ export default function AppContent() {
       try {
         const result = await checkTable(tableNo);
         console.log("Check Table Result:", result);
-        if (result?.isClosed) {
-          // โต๊ะปิด → ไปหน้า TableClosed
-          sessionStorage.removeItem("token");
-          navigate("/table-closed", { replace: true });
-          return;
-        }
 
-        if (result?.hasExistingOrder && result.token) {
+
+        if (result?.token) {
           sessionStorage.setItem("token", result.token);
-          setToken(result.token);
-
+          setToken(token);
+          const data = await fetchMenu(deptCode, search, token);
+          setMenu(data || []); if (result?.isClosed) {
+            // โต๊ะปิด → ไปหน้า TableClosed
+            sessionStorage.removeItem("token");
+            navigate("/table-closed", { replace: true });
+            return;
+          }
           const orderData = await fetchCurrentOrderOriginal(result.token);
           if (orderData) {
             setCurrentOrder({
@@ -124,12 +128,12 @@ export default function AppContent() {
           navigate("/menu", { replace: true }); // โต๊ะเปิดและมี order → menu
         } else {
           // โต๊ะเปิดแต่ไม่มี order → หน้า WelcomeForm
-          sessionStorage.removeItem("token");
+          // sessionStorage.removeItem("token");
           navigate("/home", { replace: true });
         }
       } catch (err) {
         console.error(err);
-        sessionStorage.removeItem("token");
+        // sessionStorage.removeItem("token");
         navigate("/table-closed", { replace: true });
       }
     };
@@ -158,6 +162,7 @@ export default function AppContent() {
 
   //   loadMenu();
   // }, [deptCode, search, token, fetchMenu, navigate]);
+
   useEffect(() => {
     if (!token) return;
 
@@ -178,7 +183,6 @@ export default function AppContent() {
     loadMenu();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, deptCode, search]); // ลบ fetchMenu, navigate ออก
-
 
   // =================== Loading animation ===================
   if (currentOrderLoading) {
@@ -208,14 +212,15 @@ export default function AppContent() {
   const cartCount =
     currentOrder?.orderDetails?.reduce((sum, p) => sum + p.ord_Qty, 0) || 0;
   const historyCount = history?.orderDetails;
-  const showHeader = location.pathname === "/menu";
-  const showNavbar = location.pathname === "/menu";
+  const showHeader = location.pathname == "/menu";
+  const showNavbar = showHeader;
+
 
   return (
     <div className="min-h-screen max-w-screen bg-bg">
-      <ScrollToTop scrollContainer=".scroll-container" />
+      {/* <ScrollToTop scrollContainer=".scroll-container" /> */}
       {showHeader && currentOrder && (
-        <div className="sticky top-0 z-50">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md px-4">
           <Header
             cartCount={cartCount}
             historyCount={historyCount}
@@ -243,18 +248,18 @@ export default function AppContent() {
         toastOptions={{
           style: {
             background: "#fdfbf7",
-            color: "#6c0202",
+            color: "#AF8F6F",
             border: "1px solid #6c020220"
           },
           success: {
             iconTheme: {
-              primary: "#6c0202",
+              primary: "#AF8F6F",
               secondary: "#fdfbf7"
             }
           },
           error: {
             iconTheme: {
-              primary: "#6c0202",
+              primary: "#AF8F6F",
               secondary: "#fdfbf7"
             }
           }
@@ -288,84 +293,72 @@ export default function AppContent() {
               currentOrder={currentOrder}
               currentOrderLoading={currentOrderLoading}
             >
-              <MenuPage
+
+              <MenuLayout
                 currentOrder={currentOrder}
-                setCurrentOrder={(data) =>
-                  setCurrentOrder((prev) => ({
-                    ...prev,
-                    ...data,
-                    orderDetails: [
-                      ...(data.orderDetails || prev.orderDetails || []),
-                    ],
-                  }))
-                }
-                isCartOpen={isCartOpen}
-                setIsCartOpen={setIsCartOpen}
+                setCurrentOrder={setCurrentOrder}
                 deptCode={deptCode}
                 setDeptCode={setDeptCode}
                 search={search}
+                setSearch={setSearch}
                 activeCategoryId={activeCategoryId}
                 setActiveCategoryId={setActiveCategoryId}
                 menu={menu}
+                isCartOpen={isCartOpen}
+                setIsCartOpen={setIsCartOpen}
               />
+
             </RequireOrderContext>
           }
-        />
-        <Route
-          path="/menu/:productId"
-          element={
-            <RequireOrderContext
-              currentOrder={currentOrder}
-              currentOrderLoading={currentOrderLoading}
-            >
+        >
+          {/* Overlay route */}
+          <Route
+            path="/menu/:productId"
+            element={
               <ProductPage
                 currentOrder={currentOrder}
-                setCurrentOrder={(data) =>
-                  setCurrentOrder((prev) => ({
-                    ...prev,
-                    ...data,
-                    orderDetails: [
-                      ...(data.orderDetails || prev.orderDetails || []),
-                    ],
-                  }))
-                }
+                setCurrentOrder={setCurrentOrder}
               />
-            </RequireOrderContext>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <RequireOrderContext
-              currentOrder={currentOrder}
-              currentOrderLoading={currentOrderLoading}
-            >
-              <CartPage
+            }
+          />
+          <Route
+            path="history"
+            element={
+              <RequireToken>
+                <HistoryPage
+                  currentOrder={currentOrder}
+                  setCurrentOrder={(data) => setCurrentOrder([...data])}
+                />
+              </RequireToken>
+            }
+          />
+          <Route
+            path="cart"
+            element={
+              <RequireOrderContext
                 currentOrder={currentOrder}
-                setCurrentOrder={(data) =>
-                  setCurrentOrder((prev) => ({
-                    ...prev,
-                    ...data,
-                    orderDetails: [
-                      ...(data.orderDetails || prev.orderDetails || []),
-                    ],
-                  }))
-                }
-              />
-            </RequireOrderContext>
-          }
-        />
-        <Route
-          path="/history"
-          element={
-            <RequireToken>
-              <HistoryPage
-                currentOrder={currentOrder}
-                setCurrentOrder={(data) => setCurrentOrder([...data])}
-              />
-            </RequireToken>
-          }
-        />
+                currentOrderLoading={currentOrderLoading}
+              >
+                <CartPage
+                  currentOrder={currentOrder}
+                  setCurrentOrder={(data) =>
+                    setCurrentOrder((prev) => ({
+                      ...prev,
+                      ...data,
+                      orderDetails: [
+                        ...(data.orderDetails || prev.orderDetails || []),
+                      ],
+                    }))
+                  }
+                  cart={cart}
+                />
+              </RequireOrderContext>
+            }
+          />
+        </Route>
+
+
+
         <Route
           path="/qr/:orderId"
           element={
@@ -411,15 +404,18 @@ export default function AppContent() {
               <RequireSuccessLock>
                 <KbankSuccess
                   currentOrder={currentOrder}
-                  setCurrentOrder={(data) =>
-                    setCurrentOrder((prev) => ({
-                      ...prev,
-                      ...data,
-                      orderDetails: [
-                        ...(data.orderDetails || prev.orderDetails || []),
-                      ],
-                    }))
-                  }
+                  setCurrentOrder={setCurrentOrder}
+                  // setCurrentOrder={(data) =>
+                  //   setCurrentOrder((prev) => ({
+                  //     ...prev,
+                  //     ...data,
+                  //     orderDetails: [
+                  //       ...(data.orderDetails || prev.orderDetails || []),
+                  //     ],
+
+                  //   }))
+                  // }
+
                   setIsCartOpen={setIsCartOpen}
                 />
               </RequireSuccessLock>
@@ -428,6 +424,6 @@ export default function AppContent() {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+    </div >
   );
 }

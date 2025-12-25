@@ -37,6 +37,8 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState(""); // "thaiQR" | "cash" | "visa"
     const [alert, setAlert] = useState(false);
+    const paymentMethod = currentOrder?.payment_Method;
+    const hideThaiQR = paymentMethod === "cash";
 
     useEffect(() => {
         setLocalOrder(currentOrder);
@@ -141,8 +143,39 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
         }
     };
     const handleCheckoutClick = () => {
+        const paymentMethod = currentOrder?.payment_Method;
+
+        if (paymentMethod) {
+            confirmPaymentWithMethod(paymentMethod);
+            return;
+        }
+
         setShowMemberModal(true);
     };
+
+    const confirmPaymentWithMethod = async (method) => {
+        setIsSubmitting(true);
+
+        try {
+            if (method === "thaiQR") {
+                navigate(`/kbankqr/${currentOrder.s_Ord_H_Id}`, { replace: true });
+                return;
+            }
+
+            const success = await checkoutOrder(method, memberNumber || null);
+            const updatedOrder = await fetchCurrentOrder();
+            setCurrentOrder(updatedOrder);
+            if (!success) {
+                toast.error("Checkout ล้มเหลว!");
+                return;
+            }
+
+            navigate("/history", { replace: true });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     const handleConfirmMember = async (skip = false) => {
         setShowMemberModal(false);
         setSelectedPayment(""); // reset
@@ -161,12 +194,15 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
                 setIsSubmitting(false);
             } else {
                 const success = await checkoutOrder(selectedPayment, payloadMember);
+                const updatedOrder = await fetchCurrentOrder();
+                setCurrentOrder(updatedOrder);
+
                 if (!success) {
                     toast.error("Checkout ล้มเหลว!");
                     setIsSubmitting(false);
                     return;
                 }
-                navigate(`/qr/${currentOrder.s_Ord_H_Id}`, { replace: true });
+                navigate('/history', { replace: true });
                 // onClearOrder();
             }
         } catch (err) {
@@ -175,21 +211,31 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
             setIsSubmitting(false);
         }
     };
+    useEffect(() => {
+        // ล็อก scroll ของหน้าหลัก
+        const originalStyle = window.getComputedStyle(document.body).overflow;
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            // คืนค่าเดิมตอนปิด history
+            document.body.style.overflow = originalStyle;
+        };
+    }, []);
 
     return (
         <div
-            className="flex flex-col min-h-[calc(var(--vh)*100)] max-w-md mx-auto relative bg-bg bg-grid-pattern"
+            className="fixed inset-0 z-[100] flex flex-col min-h-[calc(var(--vh)*100)] max-w-md mx-auto bg-bg bg-grid-pattern"
         >
 
             {/* Header: Clean with Red Accent */}
-            <div className="sticky top-0 z-30 bg-[#fdfbf7]/90 backdrop-blur-md border-b border-stone-200 p-4 flex items-center gap-4">
+            <div className="sticky top-0 z-30 bg-[#fdfbf7]/90 backdrop-blur-md border-b border-stone-200 p-3 flex items-center gap-4">
                 <button
-                    onClick={() => navigate("/menu")}
-                    className="w-10 h-10 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-600 shadow-sm hover:scale-105 transition active:bg-stone-50"
+                    onClick={() => navigate(-1)}
+                    className="w-8 h-8 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-600 shadow-sm hover:scale-105 transition active:bg-stone-50"
                 >
-                    <ChevronLeft size={22} />
+                    <ChevronLeft size={18} />
                 </button>
-                <h2 className="text-2xl font-bold tracking-wide text-main">
+                <h2 className="text-xl font-bold tracking-wide text-main">
                     My Cart
                 </h2>
             </div>
@@ -384,13 +430,13 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
                 <button
                     onClick={handleCheckoutClick}
                     disabled={details.length === 0 || isSubmitting}
-                    className="w-full text-white bg-main h-14 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-all disabled:opacity-50 disabled:shadow-none"
+                    className="w-full text-white bg-main h-10 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-all disabled:opacity-50 disabled:shadow-none"
                 >
                     {isSubmitting ? (
                         <span className="loading loading-spinner loading-sm text-white"></span>
                     ) : (
                         <>
-                            <span>Confirm Order</span>
+                            <span className="text-lg">Confirm Order</span>
                             <Check size={20} />
                         </>
                     )}
@@ -447,7 +493,7 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
 
                         <h3 className="text-xl font-bold text-main">Enter Member</h3>
                         <input
-                            type="text"
+                            type="number"
                             placeholder="081-234-5678"
                             maxLength={10}
                             value={memberNumber}
@@ -502,7 +548,9 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
                                     id: "thaiQR",
                                     label: "Thai QR Payment",
                                     icon: <QrCode className="w-6 h-6" />,
-                                    note: "Pay directly at your table"
+                                    note: "Pay directly at your table",
+                                    hidden: hideThaiQR,
+
                                 },
                                 {
                                     id: "cash",
@@ -516,21 +564,23 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
                                     icon: <CreditCard className="w-6 h-6" />,
                                     note: "Pay at the cashier"
                                 },
-                            ].map((method) => (
-                                <div key={method.id} className="flex flex-col gap-1">
-                                    <button
-                                        onClick={() => setSelectedPayment(method.id)}
-                                        className={`flex items-center gap-3 justify-center py-2 px-3 rounded-xl transition border ${selectedPayment === method.id
-                                            ? "border-main bg-main text-white"
-                                            : "border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200"
-                                            }`}
-                                    >
-                                        {method.icon}
-                                        <span className="flex-1 text-center">{method.label}</span>
-                                    </button>
-                                    <span className="text-xs text-gray-500">{method.note}</span>
-                                </div>
-                            ))}
+                            ]
+                                .filter(method => !method.hidden)
+                                .map((method) => (
+                                    <div key={method.id} className="flex flex-col gap-1">
+                                        <button
+                                            onClick={() => setSelectedPayment(method.id)}
+                                            className={`flex items-center gap-3 justify-center py-2 px-3 rounded-xl transition border ${selectedPayment === method.id
+                                                ? "border-main bg-main text-white"
+                                                : "border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                                }`}
+                                        >
+                                            {method.icon}
+                                            <span className="flex-1 text-center">{method.label}</span>
+                                        </button>
+                                        <span className="text-xs text-gray-500">{method.note}</span>
+                                    </div>
+                                ))}
                         </div>
 
                         <button

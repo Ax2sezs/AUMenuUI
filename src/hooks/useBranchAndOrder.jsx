@@ -62,22 +62,22 @@ export function useBranchAndOrder() {
   }, [token]); // currentOrder ไม่ต้องใส่ใน dep เพื่อป้องกัน loop
 
 
-  useEffect(() => {
-    if (!token) return;
+  // useEffect(() => {
+  //   if (!token) return;
 
-    const loadHistory = async () => {
-      try {
-        const data = await fetchHistory(token);
-        if (data) setHistory(data);
-      } catch (err) {
-        console.error("Failed to fetch history:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //   const loadHistory = async () => {
+  //     try {
+  //       const data = await fetchHistory(token);
+  //       if (data) setHistory(data);
+  //     } catch (err) {
+  //       console.error("Failed to fetch history:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    loadHistory();
-  }, [token]);
+  //   loadHistory();
+  // }, [token]);
 
   const handleOrderCreated = (order) => {
     sessionStorage.removeItem("finishedOrderId");

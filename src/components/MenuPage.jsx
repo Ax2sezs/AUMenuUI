@@ -21,11 +21,13 @@ export const MenuPage = ({
 
   const navigate = useNavigate();
   const containerRef = useRef(null);
+  const isProgrammaticScroll = useRef(false);
+  const categoryRefs = useRef({});
 
   // --- OLD IMAGE STATE (COMMENTED OUT) ---
   const [imgStages, setImgStages] = useState({});
   const [showContent, setShowContent] = useState(false);
-
+  const [isRestoring, setIsRestoring] = useState(true);
   // --- Function: Check Cart Qty ---
   const getQtyInOrder = (productId) => {
     if (!currentOrder || !currentOrder.orderDetails) return 0;
@@ -66,6 +68,41 @@ export const MenuPage = ({
     return () => clearTimeout(timer);
   }, [menuLoading, menu]);
 
+  useEffect(() => {
+    if (!filteredMenu.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort(
+            (a, b) =>
+              Math.abs(a.boundingClientRect.top) -
+              Math.abs(b.boundingClientRect.top)
+          );
+
+        if (visible.length) {
+          setActiveCategoryId(visible[0].target.id);
+        }
+      },
+      {
+        root: null,
+        // rootMargin: "-120px 0px -80% 0px",
+        threshold: 0,
+      }
+    );
+
+    Object.values(categoryRefs.current).forEach(el => {
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [filteredMenu]);
+
+
+
+
+
   // --- OLD HELPER: Images (COMMENTED OUT) ---
 
   const getSrc = (product) => {
@@ -74,7 +111,6 @@ export const MenuPage = ({
     if (stage === 1) return `https://posau.mmm2007.net/Images/Products/${product.product_Image}`;
     return "/default.png";
   };
-
 
   // --- NEW HELPER: Mock Images ---
   // const MOCK_IMAGE_COUNT = 10;
@@ -87,10 +123,16 @@ export const MenuPage = ({
 
   // ---------------------------------
 
-  const handleProductClick = (product) => {
-    navigate(`${product.m_Product_Id}`);
-  };
+  // บันทึก Category เมื่อมีการเปลี่ยน Active Tab (จาก Scroll หรือการคลิก Tab)
+  useEffect(() => {
+    if (activeCategoryId) {
+    }
+  }, [activeCategoryId]);
 
+  const handleProductClick = (product) => {
+    // บันทึกไว้ก่อนย้ายหน้าเพื่อให้ชัวร์
+    navigate(`/menu/${product.m_Product_Id}`);
+  };
   // --- Render Loading State ---
   if (!showContent || menuLoading) {
     return (
@@ -98,7 +140,7 @@ export const MenuPage = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="h-screen flex flex-col items-center justify-center bg-white bg-grid-pattern"
+        className="h-screen flex flex-col items-center justify-center bg-bg bg-grid-pattern"
       >
         <div className="w-12 h-12 border-[1px] border-t-[#2C2C2C] border-r-[#2C2C2C] border-b-transparent border-l-transparent rounded-full animate-spin mb-6" />
         <p className="text-[10px] tracking-[0.3em] text-[#8C8C8C] uppercase animate-pulse">
@@ -113,7 +155,7 @@ export const MenuPage = ({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-grid-pattern px-4 w-screen text-stone-700 pb-24 bg-[#FAFAFA]"
+      className="min-h-screen bg-grid-pattern px-4 w-screen text-stone-700 pb-24 bg-bg pt-32"
     >
       {/* --- LOGO SECTION --- */}
       <div className="flex flex-col items-center justify-center pb-2 pt-2">
@@ -129,10 +171,19 @@ export const MenuPage = ({
         </p>
       )}
 
+      {filteredMenu.length === 0 && (
+        <div className="h-screen mt-20 text-center">
+          <p className="text-stone-400">No products found.</p>
+        </div>
+      )}
+
       <AnimatePresence>
         {filteredMenu.map((category) => {
           return (
             <motion.div
+              ref={(el) => {
+                if (el) categoryRefs.current[category.sT_PCategory_Id] = el;
+              }}
               id={category.sT_PCategory_Id}
               key={category.sT_PCategory_Id}
               initial={{ opacity: 0, y: 10 }}
@@ -141,15 +192,14 @@ export const MenuPage = ({
               className="mb-6"
             >
               {/* --- Category Divider --- */}
-              <div className="flex items-center justify-center mb-4 py-2 transition-all">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="h-[1px] w-full bg-text-heavy" />
-                  <div className="border border-stone-200 px-4 py-1 rounded-full bg-white shadow-sm whitespace-nowrap">
-                    <h2 className="text-lg font-bold text-main">{category.pCate_Name}</h2>
-                  </div>
-                  <div className="h-[1px] w-full bg-text-heavy" />
-                </div>
+              <div className="flex items-center gap-4 my-8">
+                <div className="flex-1 h-[1px] bg-stone-300" />
+                <h2 className="text-lg tracking-[0.4em] text-stone-500 uppercase whitespace-nowrap">
+                  {category.pCate_Name}
+                </h2>
+                <div className="flex-1 h-[1px] bg-stone-300" />
               </div>
+
 
               {/* --- Product Grid (COL-1 LIST VIEW) --- */}
               <motion.div
@@ -170,7 +220,7 @@ export const MenuPage = ({
                       onClick={() => handleProductClick(product)}
                     >
                       {/* Image: Fixed Size & Rounded */}
-                      <figure className="relative shrink-0 w-full h-36">
+                      <figure className="relative shrink-0 w-full h-[161.5px]">
                         <img
                           // --- NEW SRC: Use Mock Source ---
                           // src={mockSrc}
