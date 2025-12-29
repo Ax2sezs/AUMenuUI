@@ -12,121 +12,6 @@ import { useState, useEffect, useRef } from "react"; // เพิ่ม useRef
 import { useMenuData } from "../context/MenuDataContext";
 import toast from "react-hot-toast";
 import QRCode from "react-qr-code";
-
-// ---------------------------------------------
-// 1. สร้าง Component: ปุ่มสไลด์ (SwipeButton)
-// ---------------------------------------------
-const SwipeButton = ({ onComplete, text = "สไลด์เพื่อชำระเงิน", disabled = false, themeColor = "#6c0202" }) => {
-    const [dragWidth, setDragWidth] = useState(0);
-    const [isDragging, setIsDragging] = useState(false);
-    const [isCompleted, setIsCompleted] = useState(false);
-    const containerRef = useRef(null);
-    const maxDragWidth = containerRef.current ? containerRef.current.clientWidth - 56 : 0; // 56 is button width
-
-    const handleStart = (e) => {
-        if (disabled || isCompleted) return;
-        setIsDragging(true);
-    };
-
-    const handleMove = (e) => {
-        if (!isDragging || disabled || isCompleted) return;
-
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const newWidth = clientX - containerRect.left - 28; // Center offset
-
-        if (newWidth >= 0 && newWidth <= maxDragWidth) {
-            setDragWidth(newWidth);
-        } else if (newWidth > maxDragWidth) {
-            setDragWidth(maxDragWidth);
-        }
-    };
-
-    const handleEnd = () => {
-        if (!isDragging || disabled || isCompleted) return;
-        setIsDragging(false);
-
-        // ถ้าลากเกิน 90% ของความกว้าง ให้ถือว่าสำเร็จ
-        if (dragWidth > maxDragWidth * 0.9) {
-            setDragWidth(maxDragWidth);
-            setIsCompleted(true);
-            onComplete(); // เรียกฟังก์ชันจ่ายเงิน
-        } else {
-            setDragWidth(0); // ดีดกลับ
-        }
-    };
-    useEffect(() => {
-        // ล็อก scroll ของหน้าหลัก
-        const originalStyle = window.getComputedStyle(document.body).overflow;
-        document.body.style.overflow = "hidden";
-
-        return () => {
-            // คืนค่าเดิมตอนปิด history
-            document.body.style.overflow = originalStyle;
-        };
-    }, []);
-
-    // คำนวณความโปร่งใสของข้อความเมื่อลากบัง
-    const textOpacity = Math.max(0, 1 - (dragWidth / (maxDragWidth * 0.8)));
-
-    return (
-        <div
-            className={`relative h-14 rounded-full select-none overflow-hidden transition-all duration-300 ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-stone-100 shadow-inner'}`}
-            ref={containerRef}
-            onTouchMove={handleMove}
-            onTouchEnd={handleEnd}
-            onMouseMove={handleMove}
-            onMouseUp={handleEnd}
-            onMouseLeave={handleEnd}
-        >
-            {/* Background Fill Progress */}
-            <div
-                className="absolute top-0 left-0 h-full rounded-r-full transition-all duration-75 ease-linear opacity-20"
-                style={{ width: `${dragWidth + 56}px`, backgroundColor: themeColor }}
-            />
-
-            {/* Text Label */}
-            <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-                <span
-                    className="font-bold text-lg tracking-wide transition-opacity duration-200 flex items-center gap-2"
-                    style={{ opacity: isCompleted ? 0 : textOpacity, color: themeColor }}
-                >
-                    {text}
-                    <ChevronsRight className="animate-pulse" size={20} />
-                </span>
-            </div>
-
-            {/* Completed State Text */}
-            {isCompleted && (
-                <div className="absolute inset-0 flex items-center justify-center z-0 animate-in fade-in zoom-in">
-                    <span className="font-bold text-lg text-white flex items-center gap-2">
-                        <Check size={20} /> กำลังดำเนินการ...
-                    </span>
-                </div>
-            )}
-
-            {/* Draggable Handle */}
-            <div
-                className="absolute top-1 bottom-1 w-12 bg-main rounded-full shadow-md flex items-center justify-center cursor-pointer z-10 active:scale-95 transition-transform"
-                style={{
-                    left: `${dragWidth + 4}px`, // +4 padding
-                    backgroundColor: isCompleted ? '#22c55e' : themeColor, // สีเขียวเมื่อเสร็จ
-                    transition: isDragging ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                }}
-                onTouchStart={handleStart}
-                onMouseDown={handleStart}
-            >
-                {isCompleted ? (
-                    <Check size={24} className="text-white" />
-                ) : (
-                    <ChevronsRight size={24} className="text-white" />
-                )}
-            </div>
-        </div>
-    );
-};
-
-
 // ---------------------------------------------
 // 2. Main Component (HistoryPage)
 // ---------------------------------------------
@@ -147,16 +32,6 @@ export const HistoryPage = () => {
 
     useEffect(() => {
         fetchHistory();
-    }, []);
-
-    useEffect(() => {
-        window.scrollTo(0, 0);
-        const setVh = () => {
-            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-        };
-        setVh();
-        window.addEventListener('resize', setVh);
-        return () => window.removeEventListener('resize', setVh);
     }, []);
 
     const getSrc = (item) => {
@@ -189,6 +64,32 @@ export const HistoryPage = () => {
         );
         return sum + item.ord_PriceNet * item.ord_Qty + addonTotal;
     }, 0);
+    useEffect(() => {
+        // ล็อก scroll ของหน้าหลัก
+        const originalStyle = window.getComputedStyle(document.body).overflow;
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            // คืนค่าเดิมตอนปิด history
+            document.body.style.overflow = originalStyle;
+        };
+    }, []);
+    useEffect(() => {
+        const scrollY = window.scrollY;
+
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = "100%";
+
+        window.scrollTo(0, 0);
+
+        return () => {
+            document.body.style.position = "";
+            document.body.style.top = "";
+            document.body.style.width = "";
+            window.scrollTo(0, scrollY);
+        };
+    }, []);
 
     return (
 

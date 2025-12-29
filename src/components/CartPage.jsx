@@ -221,6 +221,22 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
             document.body.style.overflow = originalStyle;
         };
     }, []);
+    useEffect(() => {
+        const scrollY = window.scrollY;
+
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = "100%";
+
+        window.scrollTo(0, 0);
+
+        return () => {
+            document.body.style.position = "";
+            document.body.style.top = "";
+            document.body.style.width = "";
+            window.scrollTo(0, scrollY);
+        };
+    }, []);
 
     return (
         <div
@@ -462,7 +478,7 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
                         </div>
                         <button
                             onClick={() => {
-                                navigate('/menu');
+                                navigate('-1');
                                 setAlert(false);
                             }}
                             className="px-6 py-2 bg-main text-white rounded-lg font-semibold hover:bg-red-600 transition-colors"
