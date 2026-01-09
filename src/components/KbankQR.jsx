@@ -123,7 +123,7 @@ export const KbankQR = ({ currentOrder, setCurrentOrder, setIsCartOpen }) => {
         }
 
         setPaymentQr("");
-        navigate("/cart", { replace: true });
+        navigate("menu/cart", { replace: true });
     };
 
     return (

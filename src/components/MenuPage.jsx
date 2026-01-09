@@ -155,7 +155,7 @@ export const MenuPage = ({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-grid-pattern px-4 w-screen text-stone-700 pb-24 bg-bg pt-32"
+      className="min-h-screen bg-grid-pattern px-4 w-screen text-stone-700 pb-24 bg-bg pt-10"
     >
       {/* --- LOGO SECTION --- */}
       <div className="flex flex-col items-center justify-center pb-2 pt-2">
@@ -225,7 +225,7 @@ export const MenuPage = ({
                           // --- NEW SRC: Use Mock Source ---
                           // src={mockSrc}
                           // --- OLD SRC (COMMENTED OUT) ---
-                          src={getSrc(product)}
+                          src={getSrc(product)||"/default.png"}
                           alt={product.product_Name}
                           className="h-full w-full object-cover bg-stone-100"
                           // --- OLD ERROR HANDLER (COMMENTED OUT) ---

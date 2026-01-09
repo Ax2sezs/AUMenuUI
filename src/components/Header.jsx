@@ -1,7 +1,7 @@
 // src/components/Header.jsx
-import React from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CircleAlert, Search, ShoppingCart, Utensils, ClipboardList } from "lucide-react";
+import { CircleAlert, Search, ShoppingCart, Utensils, ClipboardList, BellRing } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export const Header = ({
@@ -9,9 +9,9 @@ export const Header = ({
     currentOrder,
     search,
     setSearch,
+    setCallStaff,
 }) => {
     const navigate = useNavigate();
-
     const handleCartClick = () => {
         if (cartCount === 0) {
             toast.error("Cart is empty");
@@ -25,11 +25,11 @@ export const Header = ({
     return (
         <header
             className="w-full h-[56px] flex items-center justify-between"
-            // style={{
-            //     backgroundColor: "rgba(255,255,255,0.9)",
-            //     backdropFilter: "blur(8px)",
-            //     borderBottom: "1px solid rgba(0,0,0,0.06)",
-            // }}
+        // style={{
+        //     backgroundColor: "rgba(255,255,255,0.9)",
+        //     backdropFilter: "blur(8px)",
+        //     borderBottom: "1px solid rgba(0,0,0,0.06)",
+        // }}
         >
             {/* Left: Table (Quiet Stamp) */}
             <div className="flex items-center gap-1.5 text-stone-700">
@@ -65,6 +65,17 @@ export const Header = ({
                     }}
                 />
             </div>
+            {/** Floating Call Button */}
+            <button
+                onClick={() => setCallStaff(true)}
+                className="relative rounded-full transition-transform hover:scale-105 active:scale-95 group"
+            >
+                <span className="flex flex-col text-stone-600 justify-center items-center mr-2">
+                    <BellRing size={18} className="relative z-10 text-stone-600 group-hover:text-stone-800"
+                    />
+                </span>
+            </button>
+
             {currentOrder?.payment_Method == 'cash' && (
                 <button
                     className="relative rounded-full transition-transform hover:scale-105 active:scale-95 group"

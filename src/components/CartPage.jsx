@@ -240,13 +240,13 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex flex-col min-h-[calc(var(--vh)*100)] max-w-md mx-auto bg-bg bg-grid-pattern"
+            className="fixed inset-0 z-[100] flex flex-col max-w-md mx-auto bg-bg bg-grid-pattern"
         >
 
             {/* Header: Clean with Red Accent */}
             <div className="sticky top-0 z-30 bg-[#fdfbf7]/90 backdrop-blur-md border-b border-stone-200 p-3 flex items-center gap-4">
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate("/menu", { replace: true })}
                     className="w-8 h-8 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-600 shadow-sm hover:scale-105 transition active:bg-stone-50"
                 >
                     <ChevronLeft size={18} />

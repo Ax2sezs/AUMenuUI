@@ -47,7 +47,7 @@ export const useFetchData = () => {
         const params = new URLSearchParams(location.search);
         const code = params.get("branch");
         const table = params.get("table");
-        const pax = params.get("pax");
+        const refno = params.get("refId");
 
         if (code) {
             localStorage.setItem("branchCode", code);
@@ -57,13 +57,13 @@ export const useFetchData = () => {
             localStorage.setItem("tableNo", table);
             setTableNo(table);
         }
-        if (pax) {
-            localStorage.setItem("customerCount", pax);
-            setCustomerCount(pax);
+        if (refno) {
+            localStorage.setItem("refId", refno);
+            setCustomerCount(refno);
         }
 
         // Clean URL params after keeping them in localStorage
-        if (location.pathname !== "/home" && (code || table || pax)) {
+        if (location.pathname !== "/home" && (code || table || refno)) {
             window.history.replaceState({}, "", location.pathname);
         }
     }, [location]);
@@ -199,24 +199,27 @@ export const useFetchData = () => {
         }
     };
 
-    const checkTable = useCallback(async (tableId) => {
+    const checkTable = useCallback(async ({ tableId, refId }) => {
         setCurrentOrderLoading(true);
         setError(null);
+
         try {
-            const res = await apiClient.get(`/orders/check?tableId=${tableId}`);
-            const { orderId, token: existingToken, hasExistingOrder,isClosed } = res.data;
+            const res = await apiClient.get("/table/check", {
+                params: { tableId, refId }
+            });
+
+            const { orderId, token: existingToken, hasExistingOrder, isClosed } = res.data;
             console.log("checkTable result:", res.data);
+
             if (hasExistingOrder && existingToken && existingToken !== token) {
                 sessionStorage.setItem("token", existingToken);
-                setToken(existingToken); // trigger fetch แค่ครั้งที่ token เปลี่ยน
-
+                setToken(existingToken);
             } else {
-                // ถ้าไม่มี Order ค้าง ให้เคลียร์ state order ทิ้ง
                 setCurrentOrder(null);
             }
 
             setCurrentOrderLoading(false);
-            return { orderId, token: existingToken, hasExistingOrder,isClosed };
+            return { orderId, token: existingToken, hasExistingOrder, isClosed };
         } catch (err) {
             setError(err);
             setCurrentOrderLoading(false);

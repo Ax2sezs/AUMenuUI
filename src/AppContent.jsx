@@ -22,6 +22,7 @@ import LandingPage from "./components/LandingPage";
 import TableClosedPage from "./components/TableClosedPage";
 import MobileOnlyScreen from "./components/MobileOnlyScreen";
 import MenuLayout from "./MenuLayout";
+import FloatingCallButton from "./components/FloatingCallButton";
 
 // =================== Route Guards ===================
 const RequireNotCheckedOut = ({ children }) => {
@@ -88,6 +89,7 @@ export default function AppContent() {
   const [cart, setCart] = useState([]);
   const [menu, setMenu] = useState([]);
   const [activeCategoryId, setActiveCategoryId] = useState(null);
+  const [callStaff, setCallStaff] = useState(false);
   const isProgrammaticScroll = useRef(false);
 
   // console.log("CURRENT ORDER : ", currentOrder);
@@ -97,27 +99,26 @@ export default function AppContent() {
 
     const init = async () => {
       const tableNo = localStorage.getItem("tableNo");
-      // const refId = localStorage.getItem("refId");
-      if (!tableNo) {
-        navigate("/home", { replace: true });
+      const refid = localStorage.getItem("refid");
+      if (!tableNo && !refid) {
+        navigate("/table-closed", { replace: true });
         return;
       }
 
       try {
-        const result = await checkTable(tableNo);
+        const result = await checkTable({ tableId: tableNo, refId: refid });
         console.log("Check Table Result:", result);
+        if (result?.isClosed) {
+          // โต๊ะปิด → ไปหน้า TableClosed
+          sessionStorage.removeItem("token");
+          navigate("/table-closed", { replace: true });
+          return;
+        }
 
-
-        if (result?.token) {
+        if (result?.hasExistingOrder && result.token) {
           sessionStorage.setItem("token", result.token);
-          setToken(token);
-          const data = await fetchMenu(deptCode, search, token);
-          setMenu(data || []); if (result?.isClosed) {
-            // โต๊ะปิด → ไปหน้า TableClosed
-            sessionStorage.removeItem("token");
-            navigate("/table-closed", { replace: true });
-            return;
-          }
+          setToken(result.token);
+
           const orderData = await fetchCurrentOrderOriginal(result.token);
           if (orderData) {
             setCurrentOrder({
@@ -128,12 +129,12 @@ export default function AppContent() {
           navigate("/menu", { replace: true }); // โต๊ะเปิดและมี order → menu
         } else {
           // โต๊ะเปิดแต่ไม่มี order → หน้า WelcomeForm
-          // sessionStorage.removeItem("token");
+          sessionStorage.removeItem("token");
           navigate("/home", { replace: true });
         }
       } catch (err) {
         console.error(err);
-        // sessionStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         navigate("/table-closed", { replace: true });
       }
     };
@@ -220,7 +221,7 @@ export default function AppContent() {
     <div className="min-h-screen max-w-screen bg-bg">
       {/* <ScrollToTop scrollContainer=".scroll-container" /> */}
       {showHeader && currentOrder && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md px-4">
+        <div className="sticky top-0 left-0 right-0 z-50 bg-white shadow-md px-4">
           <Header
             cartCount={cartCount}
             historyCount={historyCount}
@@ -230,6 +231,7 @@ export default function AppContent() {
             }}
             search={search}
             setSearch={setSearch}
+            setCallStaff={setCallStaff}
           />
           {menu.length > 0 && (
             <CategoryTabs
@@ -239,6 +241,9 @@ export default function AppContent() {
             />
           )}
         </div>
+      )}
+      {callStaff && (
+        <FloatingCallButton setCallStaff={setCallStaff} callStaff={callStaff}/>
       )}
 
       <Toaster

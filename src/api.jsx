@@ -3,6 +3,8 @@ import axios from "axios";
 
 // export const BASE_URL = "http://localhost:5237/api";
 
+// export const BASE_URL = "https://apittkmenu.mmm2007.net/api";
+
 export const BASE_URL = "https://apiaumenu.mmm2007.net/api";
 
 export const apiClient = axios.create({
