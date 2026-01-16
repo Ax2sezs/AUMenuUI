@@ -94,27 +94,56 @@ export default function AppContent() {
 
   // console.log("CURRENT ORDER : ", currentOrder);
 
-const hasInit = useRef(false);
+  const hasInit = useRef(false);
 
-useEffect(() => {
-  if (hasInit.current) return;
-  if (location.pathname !== "/home") return;
+  useEffect(() => {
+    if (location.pathname !== "/home" && location.pathname !== "/") return;
+    hasInit.current = true
+    const init = async () => {
+      const tableNo = localStorage.getItem("tableNo");
+      const refid = localStorage.getItem("refid");
+      if (!tableNo && !refid) {
+        navigate("/table-closed", { replace: true });
+        return;
+      }
 
-  hasInit.current = true;
+      try {
+        const result = await checkTable({ tableId: tableNo, refId: refid });
+        console.log("Check Table Result:", result);
+        if (result?.isClosed) {
+          // โต๊ะปิด → ไปหน้า TableClosed
+          sessionStorage.removeItem("token");
+          navigate("/table-closed", { replace: true });
+          return;
+        }
 
-  const params = new URLSearchParams(location.search);
-  const branch = params.get("branch");
-  const table = params.get("table");
-  const refId = params.get("refId");
+        if (result?.hasExistingOrder && result.token) {
+          sessionStorage.setItem("token", result.token);
+          setToken(result.token);
 
-  if (branch) localStorage.setItem("branchCode", branch);
-  if (table) localStorage.setItem("tableNo", table);
-  if (refId) localStorage.setItem("refId", refId);
+          const orderData = await fetchCurrentOrderOriginal(result.token);
+          if (orderData) {
+            setCurrentOrder({
+              ...orderData,
+              orderDetails: [...(orderData.orderDetails || [])],
+            });
+          }
+          navigate("/menu", { replace: true }); // โต๊ะเปิดและมี order → menu
+        } else {
+          // โต๊ะเปิดแต่ไม่มี order → หน้า WelcomeForm
+          sessionStorage.removeItem("token");
+          navigate("/home", { replace: true });
+        }
+      } catch (err) {
+        console.error(err);
+        sessionStorage.removeItem("token");
+        navigate("/table-closed", { replace: true });
+      }
+    };
 
-  // ❗ ไม่ต้อง navigate
-  // ❗ ไม่ต้อง replace
-  // ❗ URL อยู่ของมันแบบสวย ๆ
-}, [location.pathname, location.search]);
+    init();
+  }, [navigate, location.pathname, setCurrentOrder, setToken, fetchCurrentOrderOriginal]);
+
 
 
 
@@ -219,7 +248,7 @@ useEffect(() => {
         </div>
       )}
       {callStaff && (
-        <FloatingCallButton setCallStaff={setCallStaff} callStaff={callStaff}/>
+        <FloatingCallButton setCallStaff={setCallStaff} callStaff={callStaff} />
       )}
 
       <Toaster
