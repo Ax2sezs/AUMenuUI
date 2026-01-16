@@ -161,7 +161,7 @@ export const MenuPage = ({
       <div className="flex flex-col items-center justify-center pb-2 pt-2">
         <div className="p-2">
           <img src="/logo.png" className="w-full h-12 object-contain" alt="Logo" />
-          <span className="text-sm font-bold text-text-heavy">アフターユー</span>
+          {/* <span className="text-sm font-bold text-center text-text-heavy w-full">アフターユー</span> */}
         </div>
       </div>
 
@@ -194,7 +194,7 @@ export const MenuPage = ({
               {/* --- Category Divider --- */}
               <div className="flex items-center gap-4 my-8">
                 <div className="flex-1 h-[1px] bg-stone-300" />
-                <h2 className="text-lg tracking-[0.4em] text-stone-500 uppercase whitespace-nowrap">
+                <h2 className="text-lg tracking-[0.4em] text-stone-500 uppercase whitespace-nowrap md:text-2xl">
                   {category.pCate_Name}
                 </h2>
                 <div className="flex-1 h-[1px] bg-stone-300" />
@@ -203,7 +203,7 @@ export const MenuPage = ({
 
               {/* --- Product Grid (COL-1 LIST VIEW) --- */}
               <motion.div
-                className="grid grid-cols-2 gap-4"
+                className="grid grid-cols-2 gap-4 md:grid-cols-4 md:p-6 md:gap-5 xl:grid-cols-5"
               >
                 {category.products.map((product) => {
                   const qty = getQtyInOrder(product.m_Product_Id);
@@ -220,7 +220,7 @@ export const MenuPage = ({
                       onClick={() => handleProductClick(product)}
                     >
                       {/* Image: Fixed Size & Rounded */}
-                      <figure className="relative shrink-0 w-full h-[161.5px]">
+                      <figure className="relative shrink-0 w-full h-[161.5px] md:h-60 xl:h-96">
                         <img
                           // --- NEW SRC: Use Mock Source ---
                           // src={mockSrc}
@@ -241,7 +241,7 @@ export const MenuPage = ({
                       </figure>
 
                       {/* Content: Left Aligned */}
-                      <div className="flex-1 flex flex-col justify-between h-24 px-4 py-2">
+                      <div className="flex-1 flex flex-col justify-between w-full h-24 px-4 py-2">
                         <div className="flex justify-between items-start">
                           <h3 className="text-base font-bold text-stone-800 leading-tight line-clamp-2 pr-6">
                             {product.product_Name}
@@ -259,7 +259,7 @@ export const MenuPage = ({
                         {/* Description (Optional Placeholder) */}
                         {/* <p className="text-xs text-stone-400 line-clamp-1">Authentic Japanese Flavor</p> */}
 
-                        <div className="mt-auto flex justify-between items-end">
+                        <div className="mt-auto w-full flex justify-between items-end">
                           <p className="text-lg font-bold text-main">
                             {product.bProduct_PriceNet} ฿
                           </p>

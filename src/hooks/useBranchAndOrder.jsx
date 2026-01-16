@@ -18,29 +18,7 @@ export function useBranchAndOrder() {
   const [token, setToken] = useState(() => sessionStorage.getItem("token") || null);
 
   // อ่าน branch / table / pax จาก query param
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const code = params.get("branch");
-    const table = params.get("table");
-    const pax = params.get("pax");
-
-    if (code) {
-      localStorage.setItem("branchCode", code);
-      setBranchCode(code);
-    }
-    if (table) {
-      localStorage.setItem("tableNo", table);
-      setTableNo(table);
-    }
-    if (pax) {
-      localStorage.setItem("customerCount", pax);
-      setCustomerCount(pax);
-    }
-
-    if (location.pathname !== "/landing" && (code || table || pax)) {
-      window.history.replaceState({}, "", location.pathname);
-    }
-  }, [location]);
+  
 
   // โหลด currentOrder เมื่อ token มีค่า
   useEffect(() => {
