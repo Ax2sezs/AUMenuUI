@@ -94,9 +94,11 @@ export default function AppContent() {
 
   // console.log("CURRENT ORDER : ", currentOrder);
 
+  const hasInit = useRef(false);
+
   useEffect(() => {
     if (location.pathname !== "/home" && location.pathname !== "/") return;
-
+    hasInit.current = true
     const init = async () => {
       const tableNo = localStorage.getItem("tableNo");
       const refid = localStorage.getItem("refid");
@@ -141,6 +143,9 @@ export default function AppContent() {
 
     init();
   }, [navigate, location.pathname, setCurrentOrder, setToken, fetchCurrentOrderOriginal]);
+
+
+
 
   // =================== Load menu ===================
   // useEffect(() => {
@@ -243,7 +248,7 @@ export default function AppContent() {
         </div>
       )}
       {callStaff && (
-        <FloatingCallButton setCallStaff={setCallStaff} callStaff={callStaff}/>
+        <FloatingCallButton setCallStaff={setCallStaff} callStaff={callStaff} />
       )}
 
       <Toaster

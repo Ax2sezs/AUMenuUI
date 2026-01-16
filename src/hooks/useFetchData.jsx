@@ -44,29 +44,28 @@ export const useFetchData = () => {
 
     // --- 3. Logic: URL Params Management (ทำงานเมื่อโหลดหน้าเว็บ) ---
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const code = params.get("branch");
-        const table = params.get("table");
-        const refno = params.get("refId");
+  const params = new URLSearchParams(location.search);
 
-        if (code) {
-            localStorage.setItem("branchCode", code);
-            setBranchCode(code);
-        }
-        if (table) {
-            localStorage.setItem("tableNo", table);
-            setTableNo(table);
-        }
-        if (refno) {
-            localStorage.setItem("refId", refno);
-            setCustomerCount(refno);
-        }
+  const code = params.get("branch");
+  const table = params.get("table");
+  const refno = params.get("refId");
 
-        // Clean URL params after keeping them in localStorage
-        if (location.pathname !== "/home" && (code || table || refno)) {
-            window.history.replaceState({}, "", location.pathname);
-        }
-    }, [location]);
+  if (code && !localStorage.getItem("branchCode")) {
+    localStorage.setItem("branchCode", code);
+    setBranchCode(code);
+  }
+
+  if (table && !localStorage.getItem("tableNo")) {
+    localStorage.setItem("tableNo", table);
+    setTableNo(table);
+  }
+
+  if (refno && !localStorage.getItem("refId")) {
+    localStorage.setItem("refId", refno);
+    setCustomerCount(refno);
+  }
+}, [location.search]);
+
 
     const handle401 = (err) => {
         if (err.response?.status === 401) {

@@ -163,7 +163,10 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
             }
 
             const success = await checkoutOrder(method, memberNumber || null);
+
             const updatedOrder = await fetchCurrentOrder();
+            toast.success("Order sent successfully")
+
             setCurrentOrder(updatedOrder);
             if (!success) {
                 toast.error("Checkout ล้มเหลว!");
@@ -195,6 +198,8 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
             } else {
                 const success = await checkoutOrder(selectedPayment, payloadMember);
                 const updatedOrder = await fetchCurrentOrder();
+                toast.success("Order sent successfully")
+
                 setCurrentOrder(updatedOrder);
 
                 if (!success) {
@@ -240,7 +245,7 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex flex-col max-w-md mx-auto bg-bg bg-grid-pattern"
+            className="fixed inset-0 z-[100] flex flex-col bg-bg bg-grid-pattern"
         >
 
             {/* Header: Clean with Red Accent */}
@@ -428,7 +433,7 @@ export const CartPage = ({ currentOrder, setCurrentOrder }) => {
             </div>
 
             {/* Footer Summary */}
-            <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-stone-100 p-5 rounded-t-3xl shadow-[0_-5px_25px_rgba(0,0,0,0.05)] z-40">
+            <div className="fixed bottom-0 left-0 right-0  bg-white/95 backdrop-blur-md border-t border-stone-100 p-5 rounded-t-3xl shadow-[0_-5px_25px_rgba(0,0,0,0.05)] z-40">
                 <div className="flex justify-between items-end mb-4">
                     <span className="text-gray-500 font-medium mb-1">Total </span>
                     <span className="text-3xl font-bold leading-none text-main">

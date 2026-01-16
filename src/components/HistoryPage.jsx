@@ -93,7 +93,7 @@ export const HistoryPage = () => {
 
     return (
 
-        <div className="fixed inset-0 z-[100] flex flex-col bg-bg bg-grid-pattern min-h-[calc(var(--vh)*100)] max-w-md mx-auto">
+        <div className="fixed inset-0 z-[100] flex flex-col bg-bg bg-grid-pattern ">
             {/* Header */}
             <div className="sticky top-0 z-30 bg-[#fdfbf7]/90 backdrop-blur-md border-b border-stone-200 p-3 flex items-center gap-4">
                 <button
@@ -108,7 +108,7 @@ export const HistoryPage = () => {
             </div>
 
             {/* History Items List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-48 scrollbar-hide">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-24 scrollbar-hide">
                 <div className="flex flex-col items-center rounded-2xl">
                     <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
                         Scan at the counter to pay
@@ -219,7 +219,7 @@ export const HistoryPage = () => {
             </div>
 
             {/* ⭐️ Footer Summary & Slide to Pay */}
-            <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-stone-100 p-5 rounded-t-3xl shadow-[0_-5px_25px_rgba(0,0,0,0.05)] z-40">
+            <div className="fixed bottom-0 left-0 right-0 w-full mx-auto bg-white/95 backdrop-blur-md border-t border-stone-100 p-5 rounded-t-3xl shadow-[0_-5px_25px_rgba(0,0,0,0.05)] z-40">
                 <div className="flex justify-between items-center px-1">
                     <span className="text-gray-500 font-medium">Total </span>
                     <span className="text-3xl font-bold leading-none text-main">
