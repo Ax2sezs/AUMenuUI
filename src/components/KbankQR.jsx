@@ -123,7 +123,7 @@ export const KbankQR = ({ currentOrder, setCurrentOrder, setIsCartOpen }) => {
         }
 
         setPaymentQr("");
-        navigate("menu/cart", { replace: true });
+        navigate("/menu", { replace: true });
     };
 
     return (
@@ -194,13 +194,13 @@ export const KbankQR = ({ currentOrder, setCurrentOrder, setIsCartOpen }) => {
                                 </div>
                             </div>
                             <div className="flex gap-5">
-                                <a
+                                {/* <a
                                     href={`data:image/png;base64,${paymentQr.qr_image}`}
                                     download={`KBankQR_${totalPrice}.png`}
                                     className="btn bg-main border-hidden btn-sm gap-2 "
                                 >
                                     <DownloadCloud /> Save QR Code
-                                </a>
+                                </a> */}
 
                                 {/* ======== CANCEL BUTTON ======== */}
                                 {!finished && (

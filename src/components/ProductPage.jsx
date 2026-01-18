@@ -1,7 +1,7 @@
 // src/pages/ProductPage.jsx (Redesigned)
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { ShoppingCart, Save, Plus, Minus, ChevronLeft, Loader2, ShoppingBag, Handbag } from "lucide-react";
+import { ShoppingCart, Save, Plus, Minus, ChevronLeft, Loader2, ShoppingBag, Handbag, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { useMenuData } from "../context/MenuDataContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -185,22 +185,22 @@ export const ProductPage = ({ currentOrder, setCurrentOrder }) => {
             document.body.style.overflow = originalStyle;
         };
     }, []);
-useEffect(() => {
-  const scrollY = window.scrollY;
+    useEffect(() => {
+        const scrollY = window.scrollY;
 
-  document.body.style.position = "fixed";
-  document.body.style.top = `-${scrollY}px`;
-  document.body.style.width = "100%";
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = "100%";
 
-  window.scrollTo(0, 0);
+        window.scrollTo(0, 0);
 
-  return () => {
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.width = "";
-    window.scrollTo(0, scrollY);
-  };
-}, []);
+        return () => {
+            document.body.style.position = "";
+            document.body.style.top = "";
+            document.body.style.width = "";
+            window.scrollTo(0, scrollY);
+        };
+    }, []);
 
     if (!product) {
         // ... (Loading state remains the same) ...
@@ -279,9 +279,13 @@ useEffect(() => {
                             <h1 className="text-3xl font-bold text-stone-800 mb-1 leading-tight">
                                 {product.product_Name}
                             </h1>
-                            <p className="text-sm text-stone-500 mt-1">
-                                {product.product_Desc || "Authentic Japanese flavor and texture."}
+                            <p className="text-sm text-stone-500 mt-1 whitespace-pre-line">
+                                {(product.product_Desc || "Authentic Japanese flavor and texture.")
+                                    .replace(/\\r\\n/g, "\n").trim()}
                             </p>
+
+
+
                         </div>
 
                         {/* Quantity Selector Section (Replaces Volume Pack) */}
@@ -498,51 +502,85 @@ useEffect(() => {
                                                 return (
                                                     <div
                                                         key={addon.optionItem_Id}
-                                                        className={`flex justify-between items-center rounded-xl p-3 transition ${found
-                                                            ? "border-main bg-main/10"
-                                                            : "border-stone-200 bg-white"
-                                                            }`}
+                                                        onClick={() => {
+                                                            if (found) {
+                                                                toggleAddon(addon); // ลบ
+                                                            } else {
+                                                                toggleAddon(addon); // เพิ่ม
+                                                            }
+                                                        }}
+                                                        className={`flex items-center justify-between rounded-xl p-3 transition cursor-pointer
+    ${found
+                                                                ? "border-main bg-main/10"
+                                                                : "border-stone-200 bg-white hover:bg-stone-50"
+                                                            }
+  `}
                                                     >
-
-                                                        <label className="flex items-start gap-3 flex-1 cursor-pointer">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={!!found}
-                                                                onChange={() => toggleAddon(addon)}
-                                                                className="mt-1 checkbox checkbox-sm checkbox-neutral"
+                                                        {/* LEFT */}
+                                                        <div className="flex items-start gap-3 flex-1">
+                                                            <img
+                                                                src={
+                                                                    addon.item_ImageFull
+                                                                        ? `https://posau.mmm2007.net/Images/Products/${addon.item_ImageFull}`
+                                                                        : "/default.png"
+                                                                }
+                                                                className="w-10 h-10 rounded-lg flex-shrink-0"
                                                             />
 
                                                             <div className="flex flex-col">
-                                                                <span className="text-sm font-medium text-stone-800 break-words leading-snug">
+                                                                <span className="text-sm font-medium text-stone-800 leading-snug break-words">
                                                                     {addon.item_Name}
                                                                 </span>
                                                                 <span className="text-xs text-stone-500">
                                                                     {price.toFixed(2)} ฿
                                                                 </span>
                                                             </div>
-                                                        </label>
-                                                        {found && (
-                                                            <div className="flex items-center gap-2">
+                                                        </div>
+
+                                                        {/* RIGHT AREA */}
+                                                        <div className="w-[72px] flex justify-end">
+                                                            {!found ? (
                                                                 <button
-                                                                    onClick={() => handleQtyChange(addon, -1)}
-                                                                    disabled={found.qty <= 1}
-                                                                    className="w-6 h-6 flex items-center justify-center bg-main text-white rounded-full disabled:opacity-50"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        toggleAddon(addon);
+                                                                    }}
+                                                                    className="w-7 h-7 flex items-center justify-center border border-stone-300 rounded-full text-stone-600 hover:bg-stone-100"
                                                                 >
-                                                                    <Minus size={14} />
+                                                                    <Plus size={16} />
                                                                 </button>
-                                                                <span className="w-6 text-center font-semibold text-stone-700">
-                                                                    {found.qty}
-                                                                </span>
-                                                                <button
-                                                                    onClick={() => handleQtyChange(addon, 1)}
-                                                                    disabled={found.qty >= 10}
-                                                                    className="w-6 h-6 flex items-center bg-main justify-center text-white rounded-full disabled:opacity-50"
+                                                            ) : (
+                                                                <div
+                                                                    className="flex items-center gap-2"
+                                                                    onClick={(e) => e.stopPropagation()}
                                                                 >
-                                                                    <Plus size={14} />
-                                                                </button>
-                                                            </div>
-                                                        )}
+                                                                    <button
+                                                                        onClick={() => handleQtyChange(addon, -1)}
+                                                                        disabled={found.qty <= 1}
+                                                                        className="w-6 h-6 flex items-center justify-center bg-main text-white rounded-full disabled:opacity-50"
+                                                                    >
+                                                                        <Minus size={14} />
+                                                                    </button>
+
+                                                                    <span className="w-5 text-center font-semibold text-stone-700">
+                                                                        {found.qty}
+                                                                    </span>
+
+                                                                    <button
+                                                                        onClick={() => handleQtyChange(addon, 1)}
+                                                                        disabled={found.qty >= 10}
+                                                                        className="w-6 h-6 flex items-center justify-center bg-main text-white rounded-full disabled:opacity-50"
+                                                                    >
+                                                                        <Plus size={14} />
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
+
+
+
+
                                                 );
                                             })
                                         )}

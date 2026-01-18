@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useMenuData } from "../context/MenuDataContext";
-import { ShoppingCart, Loader2 } from "lucide-react";
+import { ShoppingCart, Loader2, Plus } from "lucide-react";
 
 export const MenuPage = ({
   currentOrder,
@@ -265,8 +265,8 @@ export const MenuPage = ({
                           </p>
 
                           {/* Add Button Mockup (Visual only) */}
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isAdded ? 'bg-stone-100 text-text-heavy' : 'bg-stone-50 text-stone-400 group-hover:bg-red-50 group-hover:text-red-600'}`}>
-                            <ShoppingCart size={14} />
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isAdded ? 'bg-stone-100 text-text-heavy' : 'bg-stone-50 text-stone-400 group-hover:bg-main/30 group-hover:text-main'}`}>
+                            <Plus size={14} />
                           </div>
                         </div>
                       </div>

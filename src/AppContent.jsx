@@ -144,9 +144,6 @@ export default function AppContent() {
     init();
   }, [navigate, location.pathname, setCurrentOrder, setToken, fetchCurrentOrderOriginal]);
 
-
-
-
   // =================== Load menu ===================
   // useEffect(() => {
   //   if (!token) return;
